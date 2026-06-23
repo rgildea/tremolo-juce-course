@@ -74,7 +74,7 @@
     },
     {
       "name": "vs",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 18 2025",
       "binaryDir": "vs-build",
       "cacheVariables": {
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
