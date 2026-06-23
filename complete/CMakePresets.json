@@ -74,7 +74,7 @@
     },
     {
       "name": "vs",
-      "generator": "Visual Studio 18 2025",
+      "generator": "Visual Studio 18 2026",
       "binaryDir": "vs-build",
       "cacheVariables": {
         "CMAKE_COMPILE_WARNING_AS_ERROR": "ON",
