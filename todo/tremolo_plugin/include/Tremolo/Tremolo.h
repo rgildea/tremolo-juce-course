@@ -3,16 +3,24 @@
 namespace tremolo {
 class Tremolo {
 public:
+  Tremolo() {
+    lfo.setFrequency( 5.0f /* Hz */, true);
+  }
   void prepare(double sampleRate, int expectedMaxFramesPerBlock) {
-    juce::ignoreUnused(sampleRate, expectedMaxFramesPerBlock);
+    const juce::dsp::ProcessSpec processSpec {
+      .sampleRate = sampleRate,
+      .maximumBlockSize = static_cast<juce::uint32>(expectedMaxFramesPerBlock),
+      .numChannels = 1u,
+    };
+    lfo.prepare(processSpec);
   }
 
   void process(juce::AudioBuffer<float>& buffer) noexcept {
     // for each frame
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
-      // TODO: generate the LFO value
-
-      // TODO: calculate the modulation value
+      const auto lfoValue = lfo.processSample(0.f);
+      constexpr auto modulationDepth = 0.4f;
+      const auto modulationValue = modulationDepth * lfoValue + 1.f;
 
       // for each channel sample in the frame
       for (const auto channelIndex :
@@ -20,8 +28,8 @@ public:
         // get the input sample
         const auto inputSample = buffer.getSample(channelIndex, frameIndex);
 
-        // TODO: modulate the sample
-        const auto outputSample = inputSample;
+        // modulate the sample
+        const auto outputSample = inputSample * modulationValue;
 
         // set the output sample
         buffer.setSample(channelIndex, frameIndex, outputSample);
@@ -29,9 +37,12 @@ public:
     }
   }
 
-  void reset() noexcept {}
+  void reset() noexcept {
+    lfo.reset();
+  }
 
 private:
-  // You should put class members and private functions here
+  juce::dsp::Oscillator<float> lfo {[](auto phase){ return std::sin(phase); }};
+
 };
 }  // namespace tremolo
