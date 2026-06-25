@@ -20,7 +20,11 @@ public:
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
       const auto lfoValue = lfo.processSample(0.f);
       constexpr auto modulationDepth = 0.4f;
-      const auto modulationValue = modulationDepth * lfoValue + 1.f;
+      // instead of range [-1, 1], we want to use the range [0,1].
+      // shift the lfoValue up to [0,2] by adding 1, and then scale by half to get a value between and 1.
+      const auto lfoValueScaled = (lfoValue +1) * 0.5f;
+      // if the lfoValue is 0, we do nothing. if it's 1, we do maximum modulation, scaled by the modulationDepth.
+      const auto modulationValue = 1.0f - (modulationDepth * lfoValueScaled);
 
       // for each channel sample in the frame
       for (const auto channelIndex :
